@@ -409,16 +409,30 @@ class Catalog(pd.DataFrame):
         #handles = list(np.array(handles)[unique_indices])
         
         box = ax.get_position()
-        ax.set_position([box.x0-0.2, box.y0, box.width*0.9, box.height])
+        maptitle=ax.get_title()
+        if maptitle[0:7] == "SDO/HMI":
+            ax.set_position([box.x0, box.y0+0.15, box.width, box.height])
+
+            labels_mod=[]
+            i=1
+            for label in labels:
+                label_mod=str(i)+": "+label
+                labels_mod.append(label_mod)
+                i=i+1
+                
+            ax.legend(handles=handles, labels=labels_mod, loc="lower center", bbox_to_anchor=(0.5, -0.6), ncols=3, fontsize="x-large",borderaxespad=2)
         
-        labels_mod=[]
-        i=1
-        for label in labels:
-            label_mod=str(i)+": "+label
-            labels_mod.append(label_mod)
-            i=i+1
+        else:    
+            ax.set_position([box.x0-0.2, box.y0, box.width*0.9, box.height])
+
+            labels_mod=[]
+            i=1
+            for label in labels:
+                label_mod=str(i)+": "+label
+                labels_mod.append(label_mod)
+                i=i+1
+                
+            ax.legend(handles=handles, labels=labels_mod, bbox_to_anchor=(1.1, 1.07), loc="upper left", fontsize="xx-large",borderaxespad=2)
             
-        ax.legend(handles=handles, labels=labels_mod,bbox_to_anchor=(1.1, 1.07), loc="upper left", fontsize="xx-large",borderaxespad=2)
-        
 
         

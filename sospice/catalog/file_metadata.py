@@ -414,6 +414,7 @@ class FileMetadata:
             'points' and 'method' are passed to FileMetadata.get_fov(),
             other arguments are passed to ax.plot_coords()
         """
+        
         fov_args = dict()
         for k in ["points", "method"]:
             fov_args[k] = kwargs.pop(k, None)

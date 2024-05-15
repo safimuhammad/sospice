@@ -113,7 +113,7 @@ class FovBackground:
         carrington_rotation = int(np.floor(carrington_rotation_number(self.time)))
         url = f"http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Synoptic_Mr.{carrington_rotation}.fits"
         syn_map = Map(url)
-        fig = plt.figure(figsize=(18, 8))
+        fig = plt.figure(figsize=(19, 9.5))
         ax = fig.add_subplot(projection=syn_map)
         syn_map.plot(
             axes=ax, title=f"SDO/HMI synoptic map for CR {carrington_rotation}"
