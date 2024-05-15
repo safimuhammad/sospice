@@ -18,12 +18,11 @@ import sunpy_soar  # noqa: F401
 from ..catalog import Catalog, FileMetadata
 
 
-
-#set global figure fontsize parameters 
-plt.rcParams['axes.labelsize'] = "xx-large"
-plt.rcParams['axes.titlesize'] = "xx-large"
-plt.rcParams['xtick.labelsize'] = "x-large"
-plt.rcParams['ytick.labelsize'] = "x-large"
+# set global figure fontsize parameters
+plt.rcParams["axes.labelsize"] = "xx-large"
+plt.rcParams["axes.titlesize"] = "xx-large"
+plt.rcParams["xtick.labelsize"] = "x-large"
+plt.rcParams["ytick.labelsize"] = "x-large"
 
 
 def _show_or_save(fig, ax, show, save):
@@ -170,24 +169,32 @@ class FovBackground:
         matplotlib.axes.Axes
             Axes (with relevant projection)
         """
-        #raise NotImplementedError("Blank map background not implemented yet")
+        # raise NotImplementedError("Blank map background not implemented yet")
         data = np.full((10, 10), np.nan)
-        
-        obs_heligraphic_sth=self.observer
-        obstime=self.observer.obstime
-        #obs_helioprojective=obs_heligraphic_sth.transform_to(frames.Helioprojective)
-             
-        skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime=obstime, observer=obs_heligraphic_sth, frame=frames.Helioprojective)
-        header = sunpy.map.make_fitswcs_header(data, skycoord, scale=[1000, 1000]*u.arcsec/u.pixel)
+
+        obs_heligraphic_sth = self.observer
+        obstime = self.observer.obstime
+        # obs_helioprojective=obs_heligraphic_sth.transform_to(frames.Helioprojective)
+
+        skycoord = SkyCoord(
+            0 * u.arcsec,
+            0 * u.arcsec,
+            obstime=obstime,
+            observer=obs_heligraphic_sth,
+            frame=frames.Helioprojective,
+        )
+        header = sunpy.map.make_fitswcs_header(
+            data, skycoord, scale=[1000, 1000] * u.arcsec / u.pixel
+        )
         blank_map = sunpy.map.Map(data, header)
-        
-        #fig = plt.figure()
+
+        # fig = plt.figure()
         fig = plt.figure(figsize=(20, 10))
         ax = fig.add_subplot(projection=blank_map)
         blank_map.plot(axes=ax)
         blank_map.draw_limb(axes=ax, color="k")
         blank_map.draw_grid(axes=ax, color="k")
-        
+
         return fig, ax
 
     def plot_map(self, show=True, save=None, **kwargs):

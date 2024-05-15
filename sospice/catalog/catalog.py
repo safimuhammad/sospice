@@ -356,24 +356,27 @@ class Catalog(pd.DataFrame):
             fovs.reset_index(inplace=True)
         else:
             fovs = Catalog(data_frame=self[list(required_columns)])
-        
-        fovs=fovs.sort_values(by=['DATE'])
-        Nfov=1*len(fovs)
-        if Nfov>12:
-            fovs=fovs[0:12]
-            print("WARNING: The selected catalog contains more observations (%i) than can be displayed. Only the first 12 observations are shown. To show the remaining observations you could select e.g. a slightly different time frame."%(Nfov))
-        
+
+        fovs = fovs.sort_values(by=["DATE"])
+        Nfov = 1 * len(fovs)
+        if Nfov > 12:
+            fovs = fovs[0:12]
+            print(
+                f"WARNING: The selected catalog contains more observations ({Nfov}) than "
+                "can be displayed. Only the first 12 observations are shown."
+            )
+
         # label at the position of the plot
         fovs["fov_text"] = fovs.apply(Catalog._format_time_range, axis=1)
         # label at the level of the plot (will be de-duplicated afterwards)
-        
-        fov_labels=np.arange(1, len(fovs)+1)
-        fov_labels=fov_labels.astype(str)
-        fovs["fov_textlabel"]=fov_labels
+
+        fov_labels = np.arange(1, len(fovs) + 1)
+        fov_labels = fov_labels.astype(str)
+        fovs["fov_textlabel"] = fov_labels
         fovs["fov_label"] = fovs.apply(
             lambda row: f"{row.STUDY} ({row.MISOSTUD}) \n {row.DATE}", axis=1
         )
-         
+
         # color(s)
         color = kwargs.pop("color", None)
         studies = sorted(list(self.STUDY.unique()))
@@ -390,7 +393,7 @@ class Catalog(pd.DataFrame):
             lambda row: FileMetadata(row).plot_fov(ax, **kwargs),
             axis=1,
         )
-        
+
         if merge_by_spiobsid:
             # also plot last FOV, with dashes
             fovs_last.reset_index(inplace=True)
@@ -401,38 +404,50 @@ class Catalog(pd.DataFrame):
                 lambda row: FileMetadata(row).plot_fov(ax, **kwargs),
                 axis=1,
             )
-       
+
         # De-duplicate labels for legend (an alternative would be
         # to provide labels only to the first instance of each study)
         handles, labels = ax.get_legend_handles_labels()
-        #unique_indices = [labels.index(x) for x in sorted(set(labels))]
-        #handles = list(np.array(handles)[unique_indices])
-        
+        # unique_indices = [labels.index(x) for x in sorted(set(labels))]
+        # handles = list(np.array(handles)[unique_indices])
+
         box = ax.get_position()
-        maptitle=ax.get_title()
+        maptitle = ax.get_title()
         if maptitle[0:7] == "SDO/HMI":
-            ax.set_position([box.x0, box.y0+0.15, box.width, box.height])
+            ax.set_position([box.x0, box.y0 + 0.15, box.width, box.height])
 
-            labels_mod=[]
-            i=1
+            labels_mod = []
+            i = 1
             for label in labels:
-                label_mod=str(i)+": "+label
+                label_mod = str(i) + ": " + label
                 labels_mod.append(label_mod)
-                i=i+1
-                
-            ax.legend(handles=handles, labels=labels_mod, loc="lower center", bbox_to_anchor=(0.5, -0.6), ncols=3, fontsize="x-large",borderaxespad=2)
-        
-        else:    
-            ax.set_position([box.x0-0.2, box.y0, box.width*0.9, box.height])
+                i = i + 1
 
-            labels_mod=[]
-            i=1
+            ax.legend(
+                handles=handles,
+                labels=labels_mod,
+                loc="lower center",
+                bbox_to_anchor=(0.5, -0.6),
+                ncols=3,
+                fontsize="x-large",
+                borderaxespad=2,
+            )
+
+        else:
+            ax.set_position([box.x0 - 0.2, box.y0, box.width * 0.9, box.height])
+
+            labels_mod = []
+            i = 1
             for label in labels:
-                label_mod=str(i)+": "+label
+                label_mod = str(i) + ": " + label
                 labels_mod.append(label_mod)
-                i=i+1
-                
-            ax.legend(handles=handles, labels=labels_mod, bbox_to_anchor=(1.1, 1.07), loc="upper left", fontsize="xx-large",borderaxespad=2)
-            
+                i = i + 1
 
-        
+            ax.legend(
+                handles=handles,
+                labels=labels_mod,
+                bbox_to_anchor=(1.1, 1.07),
+                loc="upper left",
+                fontsize="xx-large",
+                borderaxespad=2,
+            )

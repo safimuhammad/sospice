@@ -414,7 +414,7 @@ class FileMetadata:
             'points' and 'method' are passed to FileMetadata.get_fov(),
             other arguments are passed to ax.plot_coords()
         """
-        
+
         fov_args = dict()
         for k in ["points", "method"]:
             fov_args[k] = kwargs.pop(k, None)
@@ -426,16 +426,14 @@ class FileMetadata:
                 if key == "color" and type(value) is float and np.isnan(value):
                     continue
                 kwargs[key] = self.metadata[index]
-        pl=ax.plot_coord(fov_coords, **kwargs)
-        plotted_color = pl[0].get_color()
-        #ax.plot_coord(fov_coords, color="k")
-        
+        ax.plot_coord(fov_coords, **kwargs)
+
         if "fov_textlabel" in self.metadata.index:
             text_args = [fov_coords[0], self.metadata.fov_textlabel]
-            #text_kwargs = {"rotation": "vertical", "ha": "right"}
+            # text_kwargs = {"rotation": "vertical", "ha": "right"}
             text_kwargs = {"rotation": 0, "ha": "right", "fontsize": 25}
-            #text_kwargs = {"rotation": 0, "ha": "right"}
-            
+            # text_kwargs = {"rotation": 0, "ha": "right"}
+
             if "fov_color" in self.metadata.index:
                 text_kwargs["color"] = self.metadata.fov_color
             if "text_coord" in dir(ax):  # astropy ≥ 6
