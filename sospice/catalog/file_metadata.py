@@ -345,6 +345,23 @@ class FileMetadata:
         )
         return observer
 
+    def mid_time(self):
+        """
+        Find "middle time" for observation in FileMetaData
+
+        Return
+        ----------
+        pd.Timestamp
+            The middle time of the observation.
+        """
+        if self.metadata["DATE-BEG"] and self.metadata["TELAPSE"] :
+            date_beg = self.metadata["DATE-BEG"]
+            return date_beg + pd.Timedelta(seconds=self.metadata["TELAPSE"] / 2) 
+        else:
+            raise RuntimeError("FileMetaData not found")
+    
+
+
     def get_fov(self, points=None, method=None):
         """
         Get the FOV coordinates (bottom left and top right vertices of rectangle
@@ -438,3 +455,5 @@ class FileMetadata:
                     *text_args, **text_kwargs
                 )
                 ax.text(*text_args, **text_kwargs)
+
+
