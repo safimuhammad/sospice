@@ -354,13 +354,11 @@ class FileMetadata:
         pd.Timestamp
             The middle time of the observation.
         """
-        if self.metadata["DATE-BEG"] and self.metadata["TELAPSE"] :
+        if self.metadata["DATE-BEG"] and self.metadata["TELAPSE"]:
             date_beg = self.metadata["DATE-BEG"]
-            return date_beg + pd.Timedelta(seconds=self.metadata["TELAPSE"] / 2) 
+            return date_beg + pd.Timedelta(seconds=self.metadata["TELAPSE"] / 2)
         else:
             raise RuntimeError("FileMetaData not found")
-    
-
 
     def get_fov(self, points=None, method=None):
         """
@@ -455,5 +453,3 @@ class FileMetadata:
                     *text_args, **text_kwargs
                 )
                 ax.text(*text_args, **text_kwargs)
-
-
