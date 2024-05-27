@@ -116,6 +116,11 @@ class TestFileMetadata:
         assert u.isclose(observer.lat, -4.2335761 * u.deg)
         assert u.isclose(observer.radius, 0.52286922 * u.au)
 
+    def test_file_mid_time(self, file_metadata):
+        fm = file_metadata
+        expected_mid_time = pd.Timestamp("2022-03-05 07:25:52.038000")
+        assert abs(fm.mid_time() - expected_mid_time).total_seconds() < 1  # noqa: W503
+
     def test_get_fov(self, file_metadata):
         observer = file_metadata.get_observer()
         frame = Helioprojective(observer=observer, obstime=observer.obstime)
