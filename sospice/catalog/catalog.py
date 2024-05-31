@@ -286,8 +286,8 @@ class Catalog(pd.DataFrame):
             return begin_min + (end_max - begin_min) / 2
         elif method == "mean":
             begin_mean = self["DATE-BEG"].mean()
-            telapse_mean = pd.Timedelta(seconds=self.TELAPSE.mean())
-            return begin_mean + telapse_mean
+            telapse_half_mean = pd.Timedelta(seconds=self.TELAPSE.mean() / 2)
+            return begin_mean + telapse_half_mean
         elif method == "barycenter":
             mid_observation = self["DATE-BEG"] + self.apply(
                 lambda row: pd.Timedelta(seconds=row.TELAPSE / 2), axis=1

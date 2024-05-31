@@ -179,7 +179,7 @@ class TestCatalog:
         )
         assert (
             abs(
-                cat.mid_time(method="mean") - pd.Timestamp("2022-04-12 08:27:16")
+                cat.mid_time(method="mean") - pd.Timestamp("2022-04-12 08:26:46")
             ).total_seconds()
             < 1  # noqa: W503
         )
