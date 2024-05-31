@@ -276,7 +276,7 @@ class Catalog(pd.DataFrame):
 
             * "midrange" (default): middle of time range, from beginning of first observation to end of last observation
             * "mean": mean of observation times (not weighted by observations durations)
-
+            * "barycenter": barycenter of the middle times of all observations (weighted by observations durations)
         """
         if method is None or method == "midrange":
             begin_min = self["DATE-BEG"].min()
