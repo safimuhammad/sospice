@@ -347,14 +347,13 @@ class FileMetadata:
 
     def mid_time(self):
         """
-        Find "middle time" for observation in FileMetaData
+        Find "middle time" for observation
 
         Return
         ----------
         pd.Timestamp
             The middle time of the observation.
         """
-
         date_beg = self.metadata["DATE-BEG"]
         return date_beg + pd.Timedelta(seconds=self.metadata["TELAPSE"] / 2)
 
