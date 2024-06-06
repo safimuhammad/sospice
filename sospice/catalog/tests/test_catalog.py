@@ -34,6 +34,11 @@ def catalog_empty():
 
 
 @pytest.fixture
+def max_download():
+    return 2
+
+
+@pytest.fixture
 def catalog_df():
     df = pd.DataFrame(
         {
