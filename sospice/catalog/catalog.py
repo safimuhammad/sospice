@@ -5,6 +5,8 @@ from itertools import cycle
 import matplotlib.colors as mcolors
 import pandas as pd
 import numpy as np
+from parfive import Downloader
+import warnings
 
 from astropy.utils.data import download_file
 
@@ -451,3 +453,147 @@ class Catalog(pd.DataFrame):
                 fontsize="xx-large",
                 borderaxespad=2,
             )
+
+    def _get_file_url_from_base_url(self, file_metadata, base_url):
+        """
+        Get URL for a file located under some base URL
+
+        Parameters
+        ----------
+        base_url: str
+            Base URL
+
+        Return
+        ------
+        str
+            File URL
+
+        Notes:
+
+        * There is no guarantee that the URL corresponds to an existing location
+        * The base URL can be a path on disk, but paths are built using "/"
+        and this might not work on all operating systems.
+        """
+        if not base_url.endswith("/"):
+            base_url += "/"
+        return base_url + file_metadata["FILE_PATH"] + "/" + file_metadata["FILENAME"]
+
+    def _get_file_url(self, file_metadata=None, base_url=None, release=None):
+        """
+        Get file URL, from a release, from some other online file tree, or from SOAR if no parameter has been provided
+
+        Parameters
+        ----------
+        base_url: str
+            Base URL for file
+        release: Release or str
+            Release to download file from. This can be a Release object, or a string for the release tag.
+
+        Return
+        ------
+        str
+            File URL
+        """
+        if release is not None:
+            if type(release) is str:
+                release = Release(release)
+            url = self._get_file_url_from_base_url(release.url)
+        elif base_url is not None:
+            url = self._get_file_url_from_base_url(base_url)
+        else:
+            url = "http://soar.esac.esa.int/soar-sl-tap/data"
+            url += "?retrieval_type=ALL_PRODUCTS"
+            url += "&QUERY=SELECT+filepath,filename+FROM+soar.v_sc_repository_file"
+            url += f"+WHERE+filename='{file_metadata.FILENAME}'"
+        return url
+
+    def _process_downloads(
+        self, row, base_dir=None, base_url=None, keep_tree=True, downloader=None
+    ):
+        """
+        Process individual rows for downloading.
+
+        Parameters
+        ----------
+        row: pd.Series
+            single row containing file metadata
+        base_dir: Path or str
+            Base directory to download file to
+        base_url: str
+            Base URL for file
+        keep_tree: bool
+            Keep tree directory structure (by level and date)
+        downloader: parfive.Downloader
+            If provided, enqueue file for download instead of downloading it.
+            To download enqueued files, run `downloader.download()`
+
+
+        Return
+        ------
+        parfive.Result
+            Download result (or None if file has only been enqueued)
+        """
+        url = self._get_file_url(
+            file_metadata=row, base_url=base_url, release=self.release_tag
+        )
+        if keep_tree:
+            destination = Path(base_dir) / row["FILE_PATH"]
+            destination.mkdir(parents=True, exist_ok=True)
+        else:
+            destination = Path(base_dir)
+        do_download = False
+        if downloader is None:
+            downloader = Downloader(overwrite=False)
+            do_download = True
+        downloader.enqueue_file(url, destination, row["FILENAME"])
+        if do_download:
+            result = downloader.download()
+            return result
+        return None
+
+    def download_files(
+        self,
+        base_dir,
+        base_url=None,
+        keep_tree=True,
+        downloader=None,
+        max_download=1000,
+    ):
+        """
+        Download all files from Catalog.,
+
+        Parameters
+        ----------
+        base_dir: Path or str
+            Base directory to download file to
+        base_url: str
+            Base URL for file
+        keep_tree: bool
+            Keep tree directory structure (by level and date)
+        downloader: parfive.Downloader
+            If provided, enqueue file for download instead of downloading it.
+            To download enqueued files, run `downloader.download()`
+        max_download: int
+            default maximum of 1000 files can be downloaded.
+            User can override it by changing the value.
+
+        Return
+        ------
+        parfive.Result
+            Download result (or None if file has only been enqueued)
+        """
+        get_catalog = self.read_catalog()
+        if max_download > 1000:
+            warnings.warn(
+                "You are overriding the default max_download: This might cause performance issues.",
+                UserWarning,
+            )
+
+        processed_downloads = get_catalog.iloc[:max_download].apply(
+            lambda row: self._process_downloads(
+                row, base_dir, base_url, keep_tree, downloader
+            ),
+            axis=1,
+        )
+
+        return processed_downloads

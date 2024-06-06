@@ -1,7 +1,9 @@
 import pytest
 from datetime import datetime
 import pandas as pd
-
+from pathlib import Path
+import shutil
+from parfive import Downloader
 
 from ..catalog import Catalog
 
@@ -9,6 +11,11 @@ from ..catalog import Catalog
 @pytest.fixture
 def catalog2():
     return Catalog(release_tag="2.0")
+
+
+@pytest.fixture
+def filename():  # noqa: F811
+    return "solo_L2_spice-n-exp_20220305T072522_V01_100663707-014.fits"
 
 
 @pytest.fixture
@@ -189,3 +196,23 @@ class TestCatalog:
             ).total_seconds()
             < 1  # noqa: W503
         )
+
+    def test_download_files(self, catalog2, max_download, filename):  # noqa: F811
+        base_dir = Path("./local/test_download_file")
+        if base_dir.exists():
+            shutil.rmtree(base_dir)
+        result = catalog2.download_files(base_dir, max_download=2, keep_tree=False)
+        assert len(result) == max_download
+
+        if len(result) > 0:
+            expected_first_file_path = (
+                base_dir / result[0][0].split("/")[-1]
+            ).as_posix()
+            assert result[0][0] == expected_first_file_path
+
+        downloader = Downloader(overwrite=False)
+        result = catalog2.download_files(
+            base_dir, max_download=1, downloader=downloader
+        )
+
+        assert downloader.queued_downloads == 1
