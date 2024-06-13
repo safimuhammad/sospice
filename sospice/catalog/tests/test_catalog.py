@@ -206,7 +206,9 @@ class TestCatalog:
         base_dir = Path("./local/test_download_file")
         if base_dir.exists():
             shutil.rmtree(base_dir)
-        result = catalog2.download_files(base_dir, max_download=2, keep_tree=False)
+        result = catalog2.download_files(
+            base_dir, max_download=max_download, keep_tree=False
+        )
         assert len(result) == max_download
 
         if len(result) > 0:
@@ -214,8 +216,13 @@ class TestCatalog:
             assert result[0] == expected_first_file_path
 
         downloader = Downloader(overwrite=False)
-        result = catalog2.download_files(
-            base_dir, max_download=1, downloader=downloader
-        )
-
+        catalog2.download_files(base_dir, max_download=1, downloader=downloader)
         assert downloader.queued_downloads == 1
+
+        downloader = Downloader(overwrite=False)
+        catalog2.download_files(base_dir, max_download=2000, downloader=downloader)
+        assert downloader.queued_downloads == 2000
+
+        downloader = Downloader(overwrite=False)
+        catalog2.download_files(base_dir, downloader=downloader)
+        assert downloader.queued_downloads > 10

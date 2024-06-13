@@ -1,16 +1,15 @@
 from dataclasses import dataclass
 from pathlib import Path
 from itertools import cycle
-
 import matplotlib.colors as mcolors
 import pandas as pd
 import numpy as np
 import warnings
+
 from parfive import Downloader
 from astropy.utils.data import download_file
 
 from .release import Release
-
 from .file_metadata import FileMetadata, required_columns
 
 
@@ -460,7 +459,7 @@ class Catalog(pd.DataFrame):
         base_url=None,
         keep_tree=True,
         downloader=None,
-        max_download=1000,
+        max_download=None,
     ):
         """
         Download all files from Catalog.,
@@ -477,18 +476,19 @@ class Catalog(pd.DataFrame):
             If provided, enqueue file for download instead of downloading it.
             To download enqueued files, run `downloader.download()`
         max_download: int
-            default maximum of 1000 files can be downloaded.
-            User can override it by changing the value.
+            Maximum number of files to be downloaded.
 
         Return
         ------
         parfive.Result
             Download result (or None if file has only been enqueued)
         """
-        if max_download > 1000:
+        default_max_download = 1000
+        if max_download is None:
+            max_download = default_max_download
+        elif max_download > default_max_download:
             warnings.warn(
-                "You are overriding the default max_download: This might cause performance issues.",
-                UserWarning,
+                "You are overriding the default max_download: This might cause performance issues."
             )
         do_download = False
         if downloader is None:
