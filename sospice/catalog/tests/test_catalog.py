@@ -6,6 +6,7 @@ import shutil
 from parfive import Downloader
 
 from ..catalog import Catalog
+from .test_release import release2  # noqa: F401
 
 
 @pytest.fixture
@@ -14,7 +15,7 @@ def catalog2():
 
 
 @pytest.fixture
-def filename():  # noqa: F811
+def filename():
     return "solo_L2_spice-n-exp_20220305T072522_V01_100663707-014.fits"
 
 
@@ -202,12 +203,14 @@ class TestCatalog:
             < 1  # noqa: W503
         )
 
-    def test_download_files(self, catalog2, max_download, filename):  # noqa: F811
+    def test_download_files(
+        self, release2, catalog2, max_download, filename  # noqa: F811
+    ):
         base_dir = Path("./local/test_download_file")
         if base_dir.exists():
             shutil.rmtree(base_dir)
         result = catalog2.download_files(
-            base_dir, max_download=max_download, keep_tree=False
+            base_dir, release=release2, max_download=max_download, keep_tree=False
         )
         assert len(result) == max_download
 
@@ -216,13 +219,17 @@ class TestCatalog:
             assert result[0] == expected_first_file_path
 
         downloader = Downloader(overwrite=False)
-        catalog2.download_files(base_dir, max_download=1, downloader=downloader)
+        catalog2.download_files(
+            base_dir, release=release2, max_download=1, downloader=downloader
+        )
         assert downloader.queued_downloads == 1
 
         downloader = Downloader(overwrite=False)
-        catalog2.download_files(base_dir, max_download=2000, downloader=downloader)
+        catalog2.download_files(
+            base_dir, release=release2, max_download=2000, downloader=downloader
+        )
         assert downloader.queued_downloads == 2000
 
         downloader = Downloader(overwrite=False)
-        catalog2.download_files(base_dir, downloader=downloader)
+        catalog2.download_files(base_dir, release=release2, downloader=downloader)
         assert downloader.queued_downloads > 10
