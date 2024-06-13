@@ -210,10 +210,8 @@ class TestCatalog:
         assert len(result) == max_download
 
         if len(result) > 0:
-            expected_first_file_path = (
-                base_dir / result[0][0].split("/")[-1]
-            ).as_posix()
-            assert result[0][0] == expected_first_file_path
+            expected_first_file_path = (base_dir / result[0].split("/")[-1]).as_posix()
+            assert result[0] == expected_first_file_path
 
         downloader = Downloader(overwrite=False)
         result = catalog2.download_files(

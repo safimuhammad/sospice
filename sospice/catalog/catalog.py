@@ -6,7 +6,7 @@ import matplotlib.colors as mcolors
 import pandas as pd
 import numpy as np
 import warnings
-
+from parfive import Downloader
 from astropy.utils.data import download_file
 
 from .release import Release
@@ -491,6 +491,10 @@ class Catalog(pd.DataFrame):
                 "You are overriding the default max_download: This might cause performance issues.",
                 UserWarning,
             )
+        do_download = False
+        if downloader is None:
+            downloader = Downloader(overwrite=False)
+            do_download = True
 
         processed_downloads = get_catalog.iloc[:max_download].apply(
             lambda row: FileMetadata(row).download_file(
@@ -501,5 +505,8 @@ class Catalog(pd.DataFrame):
             ),
             axis=1,
         )
+        if do_download:
+            result = downloader.download()
+            return result
 
         return processed_downloads
