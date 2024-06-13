@@ -455,7 +455,7 @@ class Catalog(pd.DataFrame):
 
     def download_files(
         self,
-        base_dir,
+        base_dir=".",
         base_url=None,
         release=None,
         keep_tree=True,

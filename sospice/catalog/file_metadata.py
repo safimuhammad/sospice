@@ -176,7 +176,7 @@ class FileMetadata:
         return Path(filename)
 
     def download_file(
-        self, base_dir, base_url=None, release=None, keep_tree=True, downloader=None
+        self, base_dir=".", base_url=None, release=None, keep_tree=True, downloader=None
     ):
         """
         Download file, from a release, from some other online file tree,
