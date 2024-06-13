@@ -485,7 +485,6 @@ class Catalog(pd.DataFrame):
         parfive.Result
             Download result (or None if file has only been enqueued)
         """
-        get_catalog = self.read_catalog()
         if max_download > 1000:
             warnings.warn(
                 "You are overriding the default max_download: This might cause performance issues.",
@@ -496,7 +495,7 @@ class Catalog(pd.DataFrame):
             downloader = Downloader(overwrite=False)
             do_download = True
 
-        processed_downloads = get_catalog.iloc[:max_download].apply(
+        processed_downloads = self.iloc[:max_download].apply(
             lambda row: FileMetadata(row).download_file(
                 base_dir=base_dir,
                 base_url=base_url,
