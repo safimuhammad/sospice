@@ -457,6 +457,7 @@ class Catalog(pd.DataFrame):
         self,
         base_dir,
         base_url=None,
+        release=None,
         keep_tree=True,
         downloader=None,
         max_download=None,
@@ -470,6 +471,8 @@ class Catalog(pd.DataFrame):
             Base directory to download file to
         base_url: str
             Base URL for file
+        release: Release or str
+            Release to download file from
         keep_tree: bool
             Keep tree directory structure (by level and date)
         downloader: parfive.Downloader
@@ -498,6 +501,7 @@ class Catalog(pd.DataFrame):
             lambda row: FileMetadata(row).download_file(
                 base_dir=base_dir,
                 base_url=base_url,
+                release=release,
                 keep_tree=keep_tree,
                 downloader=downloader,
             ),
