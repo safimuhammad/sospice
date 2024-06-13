@@ -215,7 +215,7 @@ class FileMetadata:
         if do_download:
             result = downloader.download()
             return result
-        return None
+        return
 
     def get_wavelengths(self):
         """

@@ -494,8 +494,7 @@ class Catalog(pd.DataFrame):
         if downloader is None:
             downloader = Downloader(overwrite=False)
             do_download = True
-
-        processed_downloads = self.iloc[:max_download].apply(
+        self.iloc[:max_download].apply(
             lambda row: FileMetadata(row).download_file(
                 base_dir=base_dir,
                 base_url=base_url,
@@ -507,5 +506,4 @@ class Catalog(pd.DataFrame):
         if do_download:
             result = downloader.download()
             return result
-
-        return processed_downloads
+        return
